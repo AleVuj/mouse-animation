@@ -77,9 +77,9 @@ export default function Index() {
             onClick={() => {
               console.log(refs);
             }}
+            key={index}
             ref={ref}
             src={`/images/${index}.jpg`}
-            alt="random"
           ></img>
         );
       })}

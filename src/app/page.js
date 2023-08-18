@@ -69,7 +69,7 @@ export default function Index() {
       }}
       className={styles.main}
     >
-      {[...Array(19).keys()].map((_, index) => {
+      {[...Array(19).keys()].map(function (_, index) {
         const ref = useRef(null);
         refs.push(ref);
         return (
@@ -80,6 +80,7 @@ export default function Index() {
             key={index}
             ref={ref}
             src={`/images/${index}.jpg`}
+            alt="random"
           ></img>
         );
       })}

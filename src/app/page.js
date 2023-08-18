@@ -2,60 +2,59 @@
 import styles from './page.module.css';
 import { useRef } from 'react';
 
-export default function Home() {
+export default function Index() {
+  let steps = 0;
   let currentIndex = 0;
+  let nbOfImages = 0;
+  let maxNumberOfImages = 8;
   let refs = [];
-  let step = 0;
-  let maxImages = 6;
-  let nbOfItems = 0;
 
   const manageMouseMove = (e) => {
     const { clientX, clientY, movementX, movementY } = e;
 
-    step += Math.abs(movementX) + Math.abs(movementY);
+    steps += Math.abs(movementX) + Math.abs(movementY);
 
-    if (step >= 200 * currentIndex) {
-      mouseMove(clientX, clientY);
+    if (steps >= currentIndex * 150) {
+      moveImage(clientX, clientY);
 
-      if (nbOfItems == maxImages) {
-        //remove
+      if (nbOfImages == maxNumberOfImages) {
         removeImage();
       }
     }
 
     if (currentIndex == refs.length) {
       currentIndex = 0;
-      step = -200;
+      steps = -150;
+    }
+  };
+
+  const moveImage = (x, y) => {
+    const currentImage = refs[currentIndex].current;
+    currentImage.style.left = x + 'px';
+    currentImage.style.top = y + 'px';
+    currentImage.style.display = 'block';
+    currentIndex++;
+    nbOfImages++;
+    setZIndex();
+  };
+
+  const setZIndex = () => {
+    const images = getCurrentImages();
+    for (let i = 0; i < images.length; i++) {
+      images[i].style.zIndex = i;
     }
   };
 
   const removeImage = () => {
-    const images = getImages();
+    const images = getCurrentImages();
     images[0].style.display = 'none';
-    nbOfItems--;
+    nbOfImages--;
   };
 
-  const mouseMove = (x, y) => {
-    const targetImage = refs[currentIndex].current;
-    targetImage.style.display = 'block';
-    targetImage.style.left = x + 'px';
-    targetImage.style.top = y + 'px';
-    currentIndex++;
-    nbOfItems++;
-    resetZIndex();
-  };
-
-  const resetZIndex = () => {
-    const images = getImages();
-    images.forEach((image, index) => {
-      image.style.zIndex = index;
-    });
-  };
-
-  const getImages = () => {
+  const getCurrentImages = () => {
     let images = [];
-    const indexOfFirstImage = currentIndex - nbOfItems;
-    for (let i = indexOfFirstImage; i < currentIndex; i++) {
+    let indexOfFirst = currentIndex - nbOfImages;
+    for (let i = indexOfFirst; i < currentIndex; i++) {
       let targetIndex = i;
       if (targetIndex < 0) targetIndex += refs.length;
       images.push(refs[targetIndex].current);
@@ -64,7 +63,7 @@ export default function Home() {
   };
 
   return (
-    <main
+    <div
       onMouseMove={(e) => {
         manageMouseMove(e);
       }}
@@ -73,16 +72,17 @@ export default function Home() {
       {[...Array(19).keys()].map((_, index) => {
         const ref = useRef(null);
         refs.push(ref);
-
         return (
           <img
+            onClick={() => {
+              console.log(refs);
+            }}
             ref={ref}
-            key={index}
             src={`/images/${index}.jpg`}
             alt="random"
           ></img>
         );
       })}
-    </main>
+    </div>
   );
 }

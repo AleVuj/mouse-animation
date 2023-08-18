@@ -1,95 +1,81 @@
-import Image from 'next/image'
-import styles from './page.module.css'
+'use client';
+import styles from './page.module.css';
+import { useRef } from 'react';
 
 export default function Home() {
+  let currentIndex = 0;
+  let collection = [];
+  let step = 0;
+  let maxImages = 6;
+  let nbOfItems = 0;
+
+  const manageMouseMove = (e) => {
+    const { clientX, clientY, movementX, movementY } = e;
+
+    step += Math.abs(movementX) + Math.abs(movementY);
+
+    if (step >= 200 * currentIndex) {
+      mouseMove(clientX, clientY);
+
+      if (nbOfItems == maxImages) {
+        //remove
+        removeImage();
+      }
+    }
+
+    if (currentIndex == collection.length) {
+      currentIndex = 0;
+      step = -200;
+    }
+  };
+
+  const removeImage = () => {
+    const images = getImages();
+    images[0].style.display = 'none';
+    nbOfItems--;
+  };
+
+  const mouseMove = (x, y) => {
+    const targetImage = collection[currentIndex].current;
+    targetImage.style.display = 'block';
+    targetImage.style.left = x + 'px';
+    targetImage.style.top = y + 'px';
+    currentIndex++;
+    nbOfItems++;
+    resetZIndex();
+  };
+
+  const resetZIndex = () => {
+    const images = getImages();
+    images.forEach((image, index) => {
+      image.style.zIndex = index;
+    });
+  };
+
+  const getImages = () => {
+    let images = [];
+    const indexOfFirstImage = currentIndex - nbOfItems;
+    for (let i = indexOfFirstImage; i < currentIndex; i++) {
+      let targetIndex = i;
+      if (targetIndex < 0) targetIndex += collection.length;
+      images.push(collection[targetIndex].current);
+    }
+    return images;
+  };
+
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>src/app/page.js</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
-            />
-          </a>
-        </div>
-      </div>
+    <main
+      onMouseMove={(e) => {
+        manageMouseMove(e);
+      }}
+      className={styles.main}
+    >
+      {[...Array(19).keys()].map((_, index) => {
+        const ref = useRef(null);
+        collection.push(ref);
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p>Find in-depth information about Next.js features and API.</p>
-        </a>
-
-        <a
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Learn <span>-&gt;</span>
-          </h2>
-          <p>Learn about Next.js in an interactive course with&nbsp;quizzes!</p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
+        return <img ref={ref} key={index} src={`/images/${index}.jpg`}></img>;
+      })}
     </main>
-  )
+  );
 }

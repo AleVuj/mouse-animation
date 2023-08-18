@@ -74,7 +74,14 @@ export default function Home() {
         const ref = useRef(null);
         refs.push(ref);
 
-        return <img ref={ref} key={index} src={`/images/${index}.jpg`}></img>;
+        return (
+          <img
+            ref={ref}
+            key={index}
+            src={`/images/${index}.jpg`}
+            alt="random"
+          ></img>
+        );
       })}
     </main>
   );

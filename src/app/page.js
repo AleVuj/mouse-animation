@@ -4,7 +4,7 @@ import { useRef } from 'react';
 
 export default function Home() {
   let currentIndex = 0;
-  let collection = [];
+  let refs = [];
   let step = 0;
   let maxImages = 6;
   let nbOfItems = 0;
@@ -23,7 +23,7 @@ export default function Home() {
       }
     }
 
-    if (currentIndex == collection.length) {
+    if (currentIndex == refs.length) {
       currentIndex = 0;
       step = -200;
     }
@@ -36,7 +36,7 @@ export default function Home() {
   };
 
   const mouseMove = (x, y) => {
-    const targetImage = collection[currentIndex].current;
+    const targetImage = refs[currentIndex].current;
     targetImage.style.display = 'block';
     targetImage.style.left = x + 'px';
     targetImage.style.top = y + 'px';
@@ -57,8 +57,8 @@ export default function Home() {
     const indexOfFirstImage = currentIndex - nbOfItems;
     for (let i = indexOfFirstImage; i < currentIndex; i++) {
       let targetIndex = i;
-      if (targetIndex < 0) targetIndex += collection.length;
-      images.push(collection[targetIndex].current);
+      if (targetIndex < 0) targetIndex += refs.length;
+      images.push(refs[targetIndex].current);
     }
     return images;
   };
@@ -72,7 +72,7 @@ export default function Home() {
     >
       {[...Array(19).keys()].map((_, index) => {
         const ref = useRef(null);
-        collection.push(ref);
+        refs.push(ref);
 
         return <img ref={ref} key={index} src={`/images/${index}.jpg`}></img>;
       })}
